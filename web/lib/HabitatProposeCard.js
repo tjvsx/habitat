@@ -20,6 +20,7 @@ import { COMMON_STYLESHEET } from './component.js';
 import './HabitatToggle.js';
 import './HabitatProposalActionBox.js';
 import './HabitatProposalActionList.js';
+import './HabitatEmojiPicker.js';
 
 const TEMPLATE = document.createElement('template');
 TEMPLATE.innerHTML = `
@@ -97,6 +98,11 @@ a {
       <div id='labels' class='flex row'></div>
     </div>
   </div>
+
+
+  <habitat-emoji-picker></habitat-emoji-picker>
+
+
 
   <div class='flex col align-left proposal-action'>
   <p class='l bold'>Action</p>
@@ -216,6 +222,7 @@ export default class HabitatProposeCard extends HTMLElement {
     const labels = [];
     let title = '';
     let details = '';
+    let emoji = '';
 
     {
       const titleSrc = this.shadowRoot.querySelector('#title');
@@ -225,6 +232,12 @@ export default class HabitatProposeCard extends HTMLElement {
       const textarea = this.shadowRoot.querySelector('textarea');
       if (textarea) {
         details = textarea.value;
+      }
+
+      const emojiPicker = this.shadowRoot.querySelector('habitat-emoji-picker').shadowRoot.querySelector('#emoji-picker span *');
+      if (emojiPicker) {
+        emoji = emojiPicker.tagName;
+        console.log(emoji)
       }
     }
     // github
@@ -249,7 +262,7 @@ export default class HabitatProposeCard extends HTMLElement {
         vault: vaultAddress,
         externalActions,
         internalActions,
-        metadata: encodeMetadata({ title, details, src, labels, topic })
+        metadata: encodeMetadata({ title, details, src, labels, topic, emoji })
       };
       console.log({args});
       const receipt = await sendTransaction('CreateProposal', args);
