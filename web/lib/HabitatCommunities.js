@@ -35,7 +35,18 @@ class HabitatCommunities extends HabitatPanel {
     wrapListener(
       this.shadowRoot.querySelector('button#community'),
       (evt) => {
-        this.shadowRoot.querySelector('#communities').prepend(document.createElement('habitat-community-preview-creator'));
+        let createCommunityCard = this.shadowRoot.querySelector('habitat-community-preview-creator');
+        if (createCommunityCard) {
+          alert('1 community creator card allowed at a time');
+        }
+        else {
+          this.shadowRoot.querySelector('#communities').prepend(document.createElement('habitat-community-preview-creator'));
+        }
+        // if (this.shadowRoot.querySelector('#communities').contains('habitat-community-preview-creator')) {
+        //   alert('card exists already')
+        // } else {
+        //   alert('creating card')
+        // }
       }
     );
 
@@ -76,8 +87,6 @@ class HabitatCommunities extends HabitatPanel {
   async renderCommunity (evt, prepend = false) {
     const container = this.shadowRoot.querySelector('#communities');
     const ele = document.createElement('habitat-community-preview');
-    //replace element, don't append
-
     // happens asyncly
     ele.update(evt);
     if (prepend) {
