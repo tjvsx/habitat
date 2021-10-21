@@ -306,6 +306,17 @@ input[type=number]::-webkit-inner-spin-button {
   -moz-appearance: textfield;
 }
 #emoji {
+  position: relative;
+  width: 4em;
+  height: 4em;
+  border-radius: 50%;
+  background-color: var(--color-bg);
+}
+#emoji span {
+  position: absolute;
+  transform:translate(-50%,  -50%);
+  top: 50%;
+  left: 50%;
   font-size: 2em;
 }
 </style>
@@ -317,18 +328,17 @@ input[type=number]::-webkit-inner-spin-button {
   </div>
   -->
 
-  <span id='emoji'><div></div></span>
-
-
   <div class='flex row between'>
     <div class='flex col align-left' style='min-width:50%;max-width:40ch;'>
       <div class='lessmore'>
         <p id='title'> </p>
       </div>
       <a href='' id='expand' class='lbl s'>MORE INFO</a>
+      <a id='id' class='s lbl' style='align-self:start;'> </a>
     </div>
-
-    <a id='id' class='s lbl' style='align-self:start;'> </a>
+    <div id='emoji' class=''>
+      <span><emoji-seedling></emoji-seedling></span>
+    </div>
 
     <div id='controls' class='flex col' style='padding-top:.2em;'>
       <div id='changeSignal' class='flex col flavor-signal'>
@@ -836,7 +846,7 @@ export default class HabitatProposalCard extends HTMLElement {
 
         const emoji = document.createElement(data.metadata.emoji);
         if (emoji) {
-          const span = this.shadowRoot.querySelector('#emoji');
+          const span = this.shadowRoot.querySelector('#emoji span');
           const old = span.querySelector('*');
           span.replaceChild(emoji, old);
         }

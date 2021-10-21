@@ -3,6 +3,11 @@ TEMPLATE.innerHTML = `
 <style>
 @import '/lib/emoji/emoji.css';
 
+    :host {
+        padding-left: 50px;
+        color: var(--color-grey);
+    }
+
     #emoji-select span{
         padding: 5px;
         width: auto;
@@ -24,15 +29,14 @@ TEMPLATE.innerHTML = `
         transform: scale(1.4);
     }
 
-    .emoji-popover {
+    #emoji-popover {
         z-index: 5;
         position: absolute;
-        bottom: 50px;
-        left: 50px;
-        box-shadow: 0 1px 15px 1px rgba(0,0,0,.08);
-        background-color: skyblue;
-        border-radius: 30px 0px 30px 0px;
-        
+        left: 30px;
+        bottom: 30px;
+        border-radius: 30px 30px 30px 30px;
+        border: 1px solid var(--color-bg-invert);
+        background: var(--color-bg);
         transition-duration: 200ms;
         transition-delay: 0ms;
         transform-style: flat;
@@ -41,10 +45,10 @@ TEMPLATE.innerHTML = `
         transition: all 0.2s linear;
         visibility: hidden;
     }
-    .emoji-popover.active{
+    #emoji-popover.active{
         visibility: visible;
         opacity:1;
-        bottom: 70px;
+        bottom: 50px;
     }
 
     .emoji-container {
@@ -57,27 +61,25 @@ TEMPLATE.innerHTML = `
         top: 5%;
         bottom: 5%;
         overflow-y: scroll;
-    }
-
-    .picker-button{
-        cursor: pointer;
         text-align: center;
-        display: inline-table;
     }
-    .picker-button span{
-        background: white;
+    #picker-button {
+        cursor: pointer;
+    }
+    #picker-button span {
+        background-color: var(--color-bg);
         width: 1em;
         height: 1em;
         position: absolute;
-        border:1px solid black;  
+        transform:translate(-50%, -50%);
+        border: 1px solid var(--color-accent-grey);
         border-radius: 50%;
         font-size: 3em;
-        
     }
 </style>
 
 
-<div class="emoji-popover" id="emoji-popover">
+<div id="emoji-popover">
   <div class="emoji-container" id="emoji-container">
     <div class="emoji-selector">
       <div id="emoji-select">
@@ -1360,7 +1362,7 @@ TEMPLATE.innerHTML = `
 </div>
 
 
-<div id="emoji-picker" class="picker-button">
+<div id="picker-button" class="flex">
     <span>
         <div style='position:absolute;font-size:10px;transform:translate(-50%, -50%);left:50%;bottom:50%;white-space:nowrap;'>Emoji &#x25bc;</div>
     </span>
@@ -1379,20 +1381,18 @@ class HabitatEmojiPicker extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.append(TEMPLATE.content.cloneNode(true));
 
-    this.picker = this.shadowRoot.querySelector('#emoji-picker');
-    console.log('picker is working')
+    this.pickerBtn = this.shadowRoot.querySelector('#picker-button');
     this.popover = this.shadowRoot.querySelector('#emoji-popover');
     this.selector = this.shadowRoot.querySelector('#emoji-select');
 
-    this.picker.addEventListener('click', (evt) => {
-        console.log('picker click read')
+    this.pickerBtn.addEventListener('click', (evt) => {
         evt.stopPropagation();
         this.popover.classList.toggle('active');
     });
 
     for(const elem of this.selector.querySelectorAll('*')) {
         elem.addEventListener('click', () => {
-            const content = this.shadowRoot.querySelector('#emoji-picker')
+            const content = this.shadowRoot.querySelector('#picker-button')
             const sp1 = content.querySelector('span');
             const emoji = sp1.querySelector('*');
             const sp1_content = document.createElement(`${elem.tagName}`);

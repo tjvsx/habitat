@@ -18,6 +18,11 @@ TEMPLATE.innerHTML = `
   border-radius: 2em;
   background-color: var(--color-accent-grey);
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  width: 90%;
+  margin-right: 5%;
+  margin-left: 5%;
 }
 .communityBox canvas {
   width: 40ch;

@@ -76,6 +76,8 @@ class HabitatCommunities extends HabitatPanel {
   async renderCommunity (evt, prepend = false) {
     const container = this.shadowRoot.querySelector('#communities');
     const ele = document.createElement('habitat-community-preview');
+    //replace element, don't append
+
     // happens asyncly
     ele.update(evt);
     if (prepend) {
