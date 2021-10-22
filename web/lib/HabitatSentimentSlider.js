@@ -1,6 +1,11 @@
 const TEMPLATE = document.createElement('template');
 TEMPLATE.innerHTML = `
 <style>
+:host {
+  margin: 1rem;
+  width: 150px;
+  position: relative;
+}
 
 .min, .max, .q1, .q2, .q3 {
   position: absolute;
@@ -46,12 +51,6 @@ TEMPLATE.innerHTML = `
   border-left: 1px solid;
   height: 5px;
   left: 75%;
-}
-
-:host {
-  margin: 1rem;
-  width: 150px;
-  position: relative;
 }
 
 .bar {
