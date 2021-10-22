@@ -39,19 +39,19 @@ TEMPLATE.innerHTML = `
 
 .q1 {
   border-left: 1px solid;
-  height: 5px;
+  height: .4em;
   left: 25%;
 }
 
 .q2 {
   border-left: 1px solid;
-  height: 5px;
+  height: .4em;
   left: 50%;
 }
 
 .q3 {
   border-left: 1px solid;
-  height: 5px;
+  height: .4em;
   left: 75%;
 }
 
