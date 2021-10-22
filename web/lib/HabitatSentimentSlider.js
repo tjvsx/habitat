@@ -3,15 +3,17 @@ TEMPLATE.innerHTML = `
 <style>
 :host {
   margin: 1rem;
-  width: 150px;
+  width: 12ch;
   position: relative;
+}
+
+* {
+  transform: translateY(-50%);
 }
 
 .min, .max, .q1, .q2, .q3 {
   position: absolute;
   z-index: 1;
-  transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
   margin: 0;
   top: 50%;
   bottom: 50%;
@@ -54,59 +56,41 @@ TEMPLATE.innerHTML = `
 }
 
 .bar {
-  position: absolute;
   display: block;
-  width: 100%;
-  height: 2.5px;
-  user-select: none;
-  z-index: 1;
-  margin-right: auto;
   margin-left: auto;
-  transform: translateY(-50%);
+  margin-right: auto;
+  width: 100%;
+  height: .1em;
+  z-index: 1;
+
   background: transparent;
   background: linear-gradient(90deg, #579D83 0 4%, #6FAA82 4% 16%, #89B981 16% 23%, #99C281 23% 30%, #ADCE80 30% 40%, #CCE080 40% 45%, #D5E37E 45% 53%, #D6D87D 53% 61%, #E1C87B 61% 80%, #E8AF78 67% 80%, #F28F74 80% 93%, #F87972 93% 100%);
   transition: all .07s linear;
 }
 
 #inner {
-  position: absolute;
-  display: block;
-  width: 100%;
-  user-select: none;
-  z-index: 2;
-  margin-right: auto;
-  margin-left: auto;
-  transform: translateY(-50%);
-  background: transparent;
-}
-
-input[type=range] {
   appearance: none; 
   display: block;
   width: 100%; 
   background: transparent;
   position: absolute;
   z-index: 2;
+  user-select: none;
   margin-right: auto;
   margin-left: auto;
   margin-top: auto;
   margin-bottom: auto;
-  transform: translateY(-50%);
   cursor: pointer;
 }
 
-input[type=range]::-webkit-slider-thumb {
+#inner::-webkit-slider-thumb {
   appearance: none;
   height: 1.4rem;
   width: 0.55rem;
   background: #F2F2F2;
-  border: .1px solid;
+  border: 1px solid var(--color-bg-invert);
   border-radius: 2em;
   z-index: 3;
-}
-
-input[type=range]:focus::-webkit-slider-thumb {
-  box-shadow: 0px 0px 7px 3px #0065c4;
 }
 
 </style>

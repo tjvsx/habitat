@@ -234,7 +234,7 @@ export default class HabitatProposeCard extends HTMLElement {
 
       const emojiPicker = this.shadowRoot.querySelector('habitat-emoji-picker').shadowRoot.querySelector('#picker-button span *');
       if (emojiPicker) {
-        emoji = emojiPicker.tagName;
+        emoji = emojiPicker.value;
         console.log(emoji)
       }
     }

@@ -1391,8 +1391,11 @@ export default class HabitatEmojiPicker extends HTMLElement {
             const span = this.shadowRoot.querySelector('#picker-button span');
             const emoji = document.createElement(`${evt.target.tagName}`);
             span.replaceChildren(emoji);
+            emoji.value = emoji.tagName;
+            // this.dispatchEvent(new Event('change'));
         }
     }, true);  
+    
    }
   
 }
