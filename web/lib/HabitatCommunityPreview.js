@@ -17,6 +17,7 @@ TEMPLATE.innerHTML = `
 }
 .communityBox img {
   width: 40ch;
+  object-fit: cover;
   max-width: 100%;
   border-radius: 2em;
 }

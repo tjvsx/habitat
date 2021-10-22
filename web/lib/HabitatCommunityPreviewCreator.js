@@ -56,6 +56,7 @@ TEMPLATE.innerHTML = `
 </div>
 `;
 
+//issue: images being uploaded with added whitespace to fill height/width requirements?
 export default class HabitatCommunityPreviewCreator extends HTMLElement {
   constructor() {
     super();

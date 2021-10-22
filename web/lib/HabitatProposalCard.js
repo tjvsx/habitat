@@ -299,16 +299,14 @@ button, .button, button *, .button * {
   color: var(--color-bg);
   background-color: var(--color-bg-invert);
 }
-input[type=number],
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  -moz-appearance: textfield;
+input[type=number] {
+  appearance: none;
 }
 #emoji {
+  visibility: hidden;
   position: relative;
-  width: 4em;
-  height: 4em;
+  width: 3.8em;
+  height: 3.8em;
   border-radius: 50%;
   background-color: var(--color-bg);
 }
@@ -318,6 +316,9 @@ input[type=number]::-webkit-inner-spin-button {
   top: 50%;
   left: 50%;
   font-size: 2em;
+}
+#emoji.active {
+  visibility: visible;
 }
 </style>
 <div class='box' style='padding:.5em 2em;'>
@@ -336,8 +337,8 @@ input[type=number]::-webkit-inner-spin-button {
       <a href='' id='expand' class='lbl s'>MORE INFO</a>
       <a id='id' class='s lbl' style='align-self:start;'> </a>
     </div>
-    <div id='emoji' class=''>
-      <span><emoji-seedling></emoji-seedling></span>
+    <div id='emoji'>
+      <span><div></div></span>
     </div>
 
     <div id='controls' class='flex col' style='padding-top:.2em;'>
@@ -844,12 +845,14 @@ export default class HabitatProposalCard extends HTMLElement {
       linkElement.textContent = 'ID#' +
         data.proposalId.substring(2, 6) + '...' + data.proposalId.substring(data.proposalId.length, data.proposalId.length - 4);
 
-        const emoji = document.createElement(data.metadata.emoji);
-        if (emoji) {
-          const span = this.shadowRoot.querySelector('#emoji span');
-          const old = span.querySelector('*');
-          span.replaceChild(emoji, old);
-        }
+      const emojiName = data.metadata.emoji || '';
+      const emojiWrapper = this.shadowRoot.querySelector('#emoji');
+        
+      if (emojiName.startsWith('EMOJI-')) {
+        const emoji = document.createElement(emojiName);
+        emojiWrapper.children[0].replaceChildren(emoji);
+      }
+      emojiWrapper.classList.toggle('active', !!emojiName);
 
       const html = data.metadata.details || 'no description';
       const article = document.createElement('article');

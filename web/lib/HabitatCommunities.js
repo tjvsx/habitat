@@ -42,11 +42,6 @@ class HabitatCommunities extends HabitatPanel {
         else {
           this.shadowRoot.querySelector('#communities').prepend(document.createElement('habitat-community-preview-creator'));
         }
-        // if (this.shadowRoot.querySelector('#communities').contains('habitat-community-preview-creator')) {
-        //   alert('card exists already')
-        // } else {
-        //   alert('creating card')
-        // }
       }
     );
 
