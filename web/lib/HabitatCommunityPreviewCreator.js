@@ -17,41 +17,48 @@ TEMPLATE.innerHTML = `
 .communityBox {
   border-radius: 2em;
   background-color: var(--color-accent-grey);
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
   width: 90%;
   margin-right: 5%;
   margin-left: 5%;
 }
 .communityBox canvas {
-  width: 40ch;
-  max-width: 100%;
+  width: 100%;
+  border: 1px solid var(--color-bg-invert);
   border-radius: 2em;
+  cursor:pointer;
 }
 .communityBox input {
-  border: none;
-  border-bottom: 1px solid var(--color-bg-invert);
+  margin-bottom: 1em;
+  color: var(--color-text);
+  border-radius: 2em;
+  border: 1px solid var(--color-accent-grey);
+  background-color: var(--color-bg);
 }
 </style>
-<div class='communityBox'>
-  <space></space>
-  <div id='input' class='flex col'>
-    <input id='title' placeholder='Name of Community'>
-    <input id='details' placeholder='Short Description about the Community'>
-    <input id='token' placeholder='Governance Token' list='tokenlistv2'>
+<div class='communityBox' style='padding:2em;'>
+  <div class='left' style='margin-bottom: 2em;'>
+    <h3><span><emoji-seedling></emoji-seedling><span> Create a Community</span></span></h3>
   </div>
-  <space></space>
-  <input style='display:none;' id='file' type='file' accept='image/*'>
-  <p></p>
-  <label style='padding:1em;'>
-    Tap on the area below to add a community banner.
-    <br>
-    Aspect ratio is 2:1. i.e 1200x600
-  </label>
-  <canvas></canvas>
-  <div>
-    <button id='create'>Create</button>
+  <div class='flex row between' style='align-items: flex-start;'>
+    <div class='align-left' style='width:45%;'>
+      <div id='input' class='flex col evenly'>
+        <input id='title' placeholder='Name of Community'>
+        <input id='details' placeholder='Short Description about the Community'>
+        <input id='token' placeholder='Governance Token' list='tokenlistv2'>
+      </div>
+    </div>
+    <div class='flex col' style='width:45%;'>
+      <div class='align-left'>
+        <input style='display:none;' id='file' type='file' accept='image/*'>
+        <canvas></canvas>
+        <label class='s'>
+          Aspect ratio is 2:1. i.e 1200x600
+        </label>
+      </div>
+      <div style='width:100%;position:relative;' class='align-right'>
+        <button style='position:absolute;right:0;' id='create'>Create</button>
+      </div>
+    </div>
   </div>
 </div>
 `;
