@@ -14,52 +14,78 @@ import { COMMON_STYLESHEET } from './component.js';
 const TEMPLATE = document.createElement('template');
 TEMPLATE.innerHTML = `
 <style>
-.communityBox {
-  border-radius: 2em;
-  background-color: var(--color-accent-grey);
+button, .button, button *, .button * {
+  background-color: var(--color-bg-button);
+  color: var(--color-button);
+  border-color: var(--color-border-button);
+}
+:host {
   width: 90%;
   margin-right: 5%;
   margin-left: 5%;
 }
+.communityBox {
+  border-radius: 2em;
+  background-color: var(--color-accent-grey);
+  width:100%;
+}
 .communityBox canvas {
   width: 100%;
+  min-width:20ch;
   border: 1px solid var(--color-bg-invert);
   border-radius: 2em;
   cursor:pointer;
+
 }
-.communityBox input {
+.communityBox input, textarea {
   margin-bottom: 1em;
   color: var(--color-text);
   border-radius: 2em;
   border: 1px solid var(--color-accent-grey);
   background-color: var(--color-bg);
+  min-width:14ch;
+  width:100%;
+}
+input::placeholder, textarea::placeholder {
+  color: var(--color-grey);
 }
 </style>
 <div class='communityBox' style='padding:2em;'>
   <div class='left' style='margin-bottom: 2em;'>
     <h3><span><emoji-seedling></emoji-seedling><span> Create a Community</span></span></h3>
   </div>
-  <div class='flex row between' style='align-items: flex-start;'>
-    <div class='align-left' style='width:45%;'>
-      <div id='input' class='flex col evenly'>
-        <input id='title' placeholder='Name of Community'>
-        <input id='details' placeholder='Short Description about the Community'>
-        <input id='token' placeholder='Governance Token' list='tokenlistv2'>
+
+
+
+  <div class='flex row between' style='align-items:flex-start;flex-wrap:wrap;gap:2em;'>
+    <div id='input' class='flex col center evenly' style='width:auto;flex-grow:1;'>
+      <input style='width:100%;height:1em;justify-content:center;' id='title' placeholder='Name of Community'>
+      <textarea style='width:100%;resize:vertical;min-height:8ch;' id='details' placeholder='Info About Community'></textarea>
+
+      <div class='flex row between' style='width:100%;flex-wrap:nowrap;'>
+        <input style='height:1em;' id='token' placeholder='Governance Token' list='tokenlistv2'>
+        <a class='right bold s' style='white-space:nowrap;padding:.5em;text-decoration:underline;'>Create a token</a>
       </div>
     </div>
-    <div class='flex col' style='width:45%;'>
-      <div class='align-left'>
-        <input style='display:none;' id='file' type='file' accept='image/*'>
-        <canvas></canvas>
-        <label class='s'>
-          Aspect ratio is 2:1. i.e 1200x600
-        </label>
-      </div>
-      <div style='width:100%;position:relative;' class='align-right'>
-        <button style='position:absolute;right:0;' id='create'>Create</button>
-      </div>
+    <div class='flex col center' style='flex-grow:1;width:50%;min-width:25ch;'>
+        <div style=''>
+          <input style='display:none;' id='file' type='file' accept='image/*'>
+          <canvas></canvas>
+          <label class='s'>
+            Aspect ratio is 2:1. i.e 1200x600
+          </label>
+        </div>
     </div>
   </div>
+
+
+
+  <div class='flex col align-right'>
+    <button id='create' style='place-self:flex-end;'>Create</button>
+  </div>
+</div>
+<div class='flex col'>
+  <button id='boxleg'>&#10006; CLOSE</button>
 </div>
 `;
 
@@ -81,6 +107,7 @@ export default class HabitatCommunityPreviewCreator extends HTMLElement {
     this._ctx.canvas.height = h;
 
     wrapListener(this.shadowRoot.querySelector('#create'), this.create.bind(this));
+    wrapListener(this.shadowRoot.querySelector('#boxleg'), () => this.remove());
 
     this._ctx.font = '128px Everett';
     this._ctx.fillStyle = 'rgba(255,255,255,.5)';

@@ -16,7 +16,7 @@ TEMPLATE.innerHTML = `
   min-height: 20ch;
 }
 .communityBox img {
-  width: 40ch;
+  width: 30ch;
   object-fit: cover;
   max-width: 100%;
   border-radius: 2em;
