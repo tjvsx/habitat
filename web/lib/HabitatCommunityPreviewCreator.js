@@ -14,28 +14,29 @@ import { COMMON_STYLESHEET } from './component.js';
 const TEMPLATE = document.createElement('template');
 TEMPLATE.innerHTML = `
 <style>
+:host {
+  width:100%;
+}
 button, .button, button *, .button * {
   background-color: var(--color-bg-button);
   color: var(--color-button);
   border-color: var(--color-border-button);
 }
-:host {
-  width: 90%;
-  margin-right: 5%;
-  margin-left: 5%;
-}
 .communityBox {
   border-radius: 2em;
-  background-color: var(--color-accent-grey);
+  background-color: var(--color-box);
+  border: 1px solid var(--color-bg-invert);
   width:100%;
 }
-.communityBox canvas {
+canvas {
   width: 100%;
   min-width:20ch;
   border: 1px solid var(--color-bg-invert);
   border-radius: 2em;
-  cursor:pointer;
-
+  cursor: pointer;
+}
+canvas.editor {
+  cursor: all-scroll;
 }
 .communityBox input, textarea {
   margin-bottom: 1em;
@@ -45,17 +46,23 @@ button, .button, button *, .button * {
   background-color: var(--color-bg);
   min-width:14ch;
   width:100%;
+  font-weight: 300;
 }
 input::placeholder, textarea::placeholder {
   color: var(--color-grey);
+}
+habitat-verc-creator {
+  width:100%;
+  display:none;
+}
+habitat-verc-creator.active {
+  display:block;
 }
 </style>
 <div class='communityBox' style='padding:2em;'>
   <div class='left' style='margin-bottom: 2em;'>
     <h3><span><emoji-seedling></emoji-seedling><span> Create a Community</span></span></h3>
   </div>
-
-
 
   <div class='flex row between' style='align-items:flex-start;flex-wrap:wrap;gap:2em;'>
     <div id='input' class='flex col center evenly' style='width:auto;flex-grow:1;'>
@@ -64,21 +71,20 @@ input::placeholder, textarea::placeholder {
 
       <div class='flex row between' style='width:100%;flex-wrap:nowrap;'>
         <input style='height:1em;' id='token' placeholder='Governance Token' list='tokenlistv2'>
-        <a class='right bold s' style='white-space:nowrap;padding:.5em;text-decoration:underline;'>Create a token</a>
+        <a id='create-token' class='right bold s' style='cursor:pointer;white-space:nowrap;padding:.5em;text-decoration:underline;'>Create Token</a>
       </div>
+      <habitat-verc-creator></habitat-verc-creator>
     </div>
     <div class='flex col center' style='flex-grow:1;width:50%;min-width:25ch;'>
         <div style=''>
           <input style='display:none;' id='file' type='file' accept='image/*'>
           <canvas></canvas>
-          <label class='s'>
+          <label class='smaller' style='font-weight:300;margin-top:.5em;'>
             Aspect ratio is 2:1. i.e 1200x600
           </label>
         </div>
     </div>
   </div>
-
-
 
   <div class='flex col align-right'>
     <button id='create' style='place-self:flex-end;'>Create</button>
@@ -107,7 +113,11 @@ export default class HabitatCommunityPreviewCreator extends HTMLElement {
     this._ctx.canvas.height = h;
 
     wrapListener(this.shadowRoot.querySelector('#create'), this.create.bind(this));
-    wrapListener(this.shadowRoot.querySelector('#boxleg'), () => this.remove());
+    wrapListener(this.shadowRoot.querySelector('#boxleg'), () => {
+      this.parentNode.parentNode.querySelector('button#community').classList.toggle('active');
+      this.remove();
+      // this.parentNode.querySelector('button#community').classList.toggle('active');
+    });
 
     this._ctx.font = '128px Everett';
     this._ctx.fillStyle = 'rgba(255,255,255,.5)';
@@ -115,16 +125,27 @@ export default class HabitatCommunityPreviewCreator extends HTMLElement {
     this._ctx.fillStyle = 'rgba(0,0,0,.5)';
     this._ctx.fillText('+', (w / 2) - 54, (h / 2) + 54);
     setupTokenlistV2(this.shadowRoot);
+
+    this.createToken = this.shadowRoot.querySelector('#create-token');
+    this.vERCCreator = this.shadowRoot.querySelector('habitat-verc-creator');
+
+    this.createToken.addEventListener('click', (evt) => {
+        evt.stopPropagation();
+        this.vERCCreator.classList.toggle('active');
+    });
   }
 
   _loadFile (evt) {
     const file = evt.target.files[0];
+    console.log('file: ' + file)
     const obj = URL.createObjectURL(file);
     const img = document.createElement('img');
 
     img.onload = () => {
       this._ctx.clearRect(0, 0, this._ctx.canvas.width, this._ctx.canvas.height);
       this._ctx.drawImage(img, 0, 0);
+      this._ctx.canvas.classList.toggle('editor');
+      console.log('image loaded')
     };
     img.src = obj;
   }

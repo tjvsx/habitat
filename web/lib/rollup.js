@@ -320,8 +320,10 @@ export async function* pullEvents (habitat, filter, blocks = 100) {
   }
 
   const logs = await habitat.provider.send('eth_getLogs', [filter]);
+  // console.log(logs)
   for (const log of logs.reverse()) {
     const evt = habitat.interface.parseLog(log);
+    evt.block = Number(log.blockNumber);
     yield Object.assign(evt, { transactionHash: log.transactionHash });
   }
   filter.toBlock = filter.fromBlock - 1;

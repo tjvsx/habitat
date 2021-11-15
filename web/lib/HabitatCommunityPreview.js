@@ -9,23 +9,26 @@ import { COMMON_STYLESHEET } from './component.js';
 const TEMPLATE = document.createElement('template');
 TEMPLATE.innerHTML = `
 <style>
-.communityBox {
+#communityBox {
   border-radius: 2em;
   background-color: var(--color-accent-grey);
   cursor: pointer;
-  min-height: 20ch;
-}
-.communityBox img {
+  min-height: 18ch;
   width: 30ch;
+}
+#communityBox img {
   object-fit: cover;
-  max-width: 100%;
+  margin-bottom: 0;
+  width: 100%;
   border-radius: 2em;
 }
 </style>
-<div class='communityBox'>
+<div id='communityBox' class='flex col'>
+  <div>
+    <a id='title'></a>
+  </div>
   <space></space>
-  <a class='bold big' id='title'></a>
-  <space></space>
+  <div>
   <a id='banner'><img></a>
 </div>
 `;
