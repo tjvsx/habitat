@@ -63,7 +63,7 @@ habitat-verc-creator.active {
   </div>
 
   <div class='flex row between' style='align-items:flex-start;flex-wrap:wrap;gap:2em;'>
-    <div id='input' class='flex col center evenly' style='width:auto;flex-grow:1;'>
+    <div id='input' class='flex col center evenly' style='width:auto; flex:1 0 0;'>
       <input style='width:100%;height:1em;justify-content:center;' id='title' placeholder='Name of Community'>
       <textarea style='width:100%;resize:vertical;min-height:8ch;' id='details' placeholder='Info About Community'></textarea>
 
@@ -73,7 +73,7 @@ habitat-verc-creator.active {
       </div>
       <habitat-verc-creator></habitat-verc-creator>
     </div>
-    <div class='flex col center' style='flex-grow:1;width:50%;min-width:25ch;'>
+    <div class='flex col center' style='min-width:25ch; flex: 1 0 0;'>
         <div style=''>
           <input style='display:none;' id='file' type='file' accept='image/*'>
           <canvas></canvas>

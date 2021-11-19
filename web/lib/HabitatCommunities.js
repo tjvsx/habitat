@@ -214,6 +214,8 @@ class HabitatCommunities extends HabitatPanel {
     this.allContainer = this.shadowRoot.querySelector('#allCommunities');
     this.userContainer = this.shadowRoot.querySelector('#userCommunities');
 
+    //wrapListener(this.shadowRoot.querySelector('button#name'), (evt) => new UsernameFlow(evt.target));
+
     this.sortBtn.addEventListener('click', evt => {
         evt.stopPropagation();
         this.dropdown.classList.toggle('active');

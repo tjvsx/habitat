@@ -12,6 +12,10 @@ import { COMMON_STYLESHEET } from './component.js';
 
 const { VERC_FACTORY_ADDRESS } = getConfig();
 
+const CELEBRATION = `<div class='flex left m'>
+<p style='padding:1em;'>Success! 🎉 Your token has been created. The total supply was sent to your address.</p>
+</div>`;
+
 const TEMPLATE = document.createElement('template');
 TEMPLATE.innerHTML = `
 <style>
@@ -33,15 +37,17 @@ input {
   font-weight: 300;
 }
 </style>
-<div class='wrapper'>
-  <div id='input' class='flex col'>
-    <input id='name' placeholder='Token Name'>
-    <input id='symbol' placeholder='Token Ticker (e.g. HBT)'>
-    <input id='decimals' placeholder='Decimal Places (most tokens use 18)' type='number'>
-    <input id='totalSupply' placeholder='Total Supply'>
-  </div>
-  <div style='width:100%;position:relative;'>
-    <button id='create' style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:10em;padding:.5em 1em .5em 1em;'>Create Token</button>
+<div>
+  <div class='wrapper'>
+    <div id='input' class='flex col'>
+      <input id='name' placeholder='Token Name'>
+      <input id='symbol' placeholder='Token Ticker (e.g. HBT)'>
+      <input id='decimals' placeholder='Decimal Places (most tokens use 18)' type='number'>
+      <input id='totalSupply' placeholder='Total Supply'>
+    </div>
+    <div style='width:100%;position:relative;'>
+      <button id='create' style='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:10em;padding:.5em 1em .5em 1em;'>Create Token</button>
+    </div>
   </div>
 </div>
 `;
@@ -101,13 +107,9 @@ export default class HabitatVERCCreator extends HTMLElement {
     console.log(receipt.events);
     const address = receipt.events[0].args[1];
     console.log(`Token(${address}) successfully created, the total supply was sent to your account.`);
-    
 
-        //popover
-    //  <p id='feedback' class='s'> </p>
-    // this.shadowRoot.querySelector('#feedback').textContent = `Token(${address}) successfully created, the total supply was sent to your account.`;
+    this.shadowRoot.querySelector('.wrapper').parentNode.innerHTML = `${CELEBRATION}`;
 
-    this.shadowRoot.querySelector('#create').textContent = 'Close';
   }
 }
 customElements.define('habitat-verc-creator', HabitatVERCCreator);
