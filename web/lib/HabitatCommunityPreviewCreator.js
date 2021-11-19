@@ -19,8 +19,6 @@ TEMPLATE.innerHTML = `
 }
 button, .button, button *, .button * {
   background-color: var(--color-bg-button);
-  color: var(--color-button);
-  border-color: var(--color-border-button);
 }
 .communityBox {
   border-radius: 2em;

@@ -21,7 +21,7 @@ import './HabitatFlipCard.js';
 //import { COMMON_STYLESHEET } from './component.js';
 
 const SVG_SORT_ICON = `<svg width="20" height="20" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M12.0871 8.91294V1H20V8.91294H12.0871ZM19.2176 1.78235H12.8918V8.10824H19.2176V1.78235ZM1 12.0871H8.91294V20H1V12.0871ZM1.78235 19.2176H8.10824V12.8918H1.78235V19.2176ZM1 1H8.91294V8.91294H1V1ZM1.78235 8.13059H8.10824V1.80471H1.78235V8.13059ZM16.0435 17.6306L19.5976 13.6741H20V14.4565L16.4459 18.4129H15.6635L12.1094 14.4565V13.6741H12.5118L16.0435 17.6306Z" fill="black" stroke="black" stroke-width="0.4"/>
+<path d="M11.888,9.113L11.888,0.801L20.2,0.801L20.2,9.113L11.888,9.113ZM19.018,1.982L13.092,1.982L13.092,7.909L19.018,7.909L19.018,1.982ZM0.8,11.891L9.112,11.891L9.112,20.2L0.8,20.2L0.8,11.891ZM1.982,19.018L7.914,19.018L7.914,13.091L1.982,13.091L1.982,19.018ZM0.8,0.801L9.112,0.801L9.112,9.113L0.8,9.113L0.8,0.801ZM1.982,7.931L7.914,7.931L7.914,2.004L1.982,2.004L1.982,7.931ZM16.044,17.333L19.508,13.474L20.2,13.474L20.2,14.534L16.535,18.613L15.574,18.613L11.888,14.534L11.91,13.474L12.601,13.474L16.044,17.333Z" fill="black"/>
 </svg>`
 
 const COMMUNITY_PREVIEW_TEMPLATE = `
@@ -135,6 +135,9 @@ class HabitatCommunities extends HabitatPanel {
     padding: .375em 1em;
     margin-left: .5em;
   }
+  #sort > svg > path {
+    fill: var(--color-text);
+  }
   #sort-dropdown {
     display:none;
   }
@@ -153,6 +156,7 @@ class HabitatCommunities extends HabitatPanel {
     display:block;
     padding:1em 0;
     cursor:pointer;
+    color: var(--color-text);
   }
   #userCommunitiesTitle {
     display: none;
