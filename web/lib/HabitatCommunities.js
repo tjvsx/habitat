@@ -158,11 +158,10 @@ class HabitatCommunities extends HabitatPanel {
     cursor:pointer;
     color: var(--color-text);
   }
-  #userCommunitiesTitle {
+  #userCommunitiesContainer {
     display: none;
-    padding: 1rem 1rem 0 0;
   }
-  #userCommunitiesTitle.visible {
+  #userCommunitiesContainer.visible {
     display: block;
   }
 
@@ -170,9 +169,9 @@ class HabitatCommunities extends HabitatPanel {
   </style>
   <div style='width:90%;margin-left:auto;margin-right:auto;position:relative;'>
 
-  <space></space>
+    <space></space>
 
-    <div style='position:absolute;right:0;'>
+    <div style='position:absolute;right:0;padding:1rem 0;'>
       <div id='buttons' class='flex row' style='place-content:flex-end;'>
         <button id='community'>Create</button>
         <button id='sort'>${SVG_SORT_ICON}</button>
@@ -186,12 +185,17 @@ class HabitatCommunities extends HabitatPanel {
       </div>
     </div>
 
+    <div id='createCommunityContainer'>
+    </div>
 
-    <p id='userCommunitiesTitle' class='l light' style='padding-bottom:2em;'><span><emoji-herb></emoji-herb><span> Your Communities</span></span></p>
-    <div id='userCommunities' class='flex row center evenly'></div>
-      
-    <p class='l light' style='padding-bottom:2em;'><span><emoji-camping></emoji-camping><span> Communities on Habitat</span></span></p>
-    <div id='allCommunities' class='flex row center evenly'></div>
+    <div id='userCommunitiesContainer'>
+      <p class='xl light' style='padding:2rem 0;'><span><emoji-herb></emoji-herb><span> Your Communities</span></span></p>
+      <div id='userCommunities' class='flex row center evenly'></div>
+    </div>
+    <div>
+      <p class='xl light' style='padding:2rem 0;'><span><emoji-camping></emoji-camping><span> Communities on Habitat</span></span></p>
+      <div id='allCommunities' class='flex row center evenly'></div>
+    </div>
 
   </div>
   `;
@@ -211,7 +215,7 @@ class HabitatCommunities extends HabitatPanel {
 
     this.tokens = []; //for comparison
 
-    this.allContainer = this.shadowRoot.querySelector('#allCommunities');
+    this.container = this.shadowRoot.querySelector('#allCommunities');
     this.userContainer = this.shadowRoot.querySelector('#userCommunities');
 
     //wrapListener(this.shadowRoot.querySelector('button#name'), (evt) => new UsernameFlow(evt.target));
@@ -226,7 +230,7 @@ class HabitatCommunities extends HabitatPanel {
               this.userContainer.innerHTML = '';
               this._userLoaded = {};
 
-              this.allContainer.innerHTML = '';
+              this.container.innerHTML = '';
               this._loaded = {};
 
               if (evt.target.id === 'sort-az') {
@@ -258,7 +262,7 @@ class HabitatCommunities extends HabitatPanel {
         for (const community of this.communities) {
           if (!this._loaded[community.transactionHash]) {
             this._loaded[community.transactionHash] = true;
-            this.renderCommunity(this.allContainer, community);
+            this.renderCommunity(this.container, community);
           }
         }
       }
@@ -299,7 +303,9 @@ class HabitatCommunities extends HabitatPanel {
       const signer = await getSigner();
       let address = await signer.getAddress();
       this.tokens = (await queryTransfers(address)).tokens;
-      this.shadowRoot.querySelector('#userCommunitiesTitle').classList.toggle('visible');
+      if (this.userCommunities) {
+        this.shadowRoot.querySelector('#userCommunitiesContainer').classList.toggle('visible');
+      }
     }
 
     wrapListener(
@@ -307,11 +313,11 @@ class HabitatCommunities extends HabitatPanel {
       (evt) => {
         let createCommunityCard = this.shadowRoot.querySelector('habitat-community-preview-creator');
         if (createCommunityCard) {
-          alert('1 community creator card allowed at a time');
+          throw new Error('Only one card allowed at a time');
         }
         else {
           this.shadowRoot.querySelector('button#community').classList.toggle('active');
-          this.shadowRoot.querySelector('#userCommunities').prepend(document.createElement('habitat-community-preview-creator'));
+          this.shadowRoot.querySelector('#createCommunityContainer').prepend(document.createElement('habitat-community-preview-creator'));
         }
       }
     );
@@ -390,7 +396,7 @@ class HabitatCommunities extends HabitatPanel {
     for await (const evt of pullEvents(habitat, filter, 1)) {
       if (!this._loaded[evt.transactionHash]) {
         this._loaded[evt.transactionHash] = true;
-        this.renderCommunity(this.allContainer, evt, true);
+        this.renderCommunity(this.container, evt, true);
       }
     }
   }

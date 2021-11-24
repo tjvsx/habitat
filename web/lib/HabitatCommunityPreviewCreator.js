@@ -27,6 +27,7 @@ button, .button, button *, .button * {
   width:100%;
 }
 canvas {
+  margin: .5em 0;
   width: 100%;
   min-width:20ch;
   border: 1px solid var(--color-bg-invert);
@@ -37,7 +38,7 @@ canvas.editor {
   cursor: all-scroll;
 }
 .communityBox input, textarea {
-  margin-bottom: 1em;
+  margin: .5em 0;
   color: var(--color-text);
   border-radius: 2em;
   border: 1px solid var(--color-accent-grey);
@@ -57,9 +58,9 @@ habitat-verc-creator.active {
   display:block;
 }
 </style>
-<div class='communityBox' style='padding:2em;'>
+<div class='communityBox' style='padding:2em;margin:5em 0 0 0'>
   <div class='left' style='margin-bottom: 2em;'>
-    <h3><span><emoji-seedling></emoji-seedling><span> Create a Community</span></span></h3>
+    <p class='l'><span><emoji-seedling></emoji-seedling><span> Create a Community</span></span></p>
   </div>
 
   <div class='flex row between' style='align-items:flex-start;flex-wrap:wrap;gap:2em;'>
@@ -77,7 +78,7 @@ habitat-verc-creator.active {
         <div style=''>
           <input style='display:none;' id='file' type='file' accept='image/*'>
           <canvas></canvas>
-          <label class='smaller' style='font-weight:300;margin-top:.5em;'>
+          <label class='smaller' style='font-weight:300;margin-top:0;'>
             Aspect ratio is 2:1. i.e 1200x600
           </label>
         </div>
@@ -112,9 +113,8 @@ export default class HabitatCommunityPreviewCreator extends HTMLElement {
 
     wrapListener(this.shadowRoot.querySelector('#create'), this.create.bind(this));
     wrapListener(this.shadowRoot.querySelector('#boxleg'), () => {
-      this.parentNode.parentNode.querySelector('button#community').classList.toggle('active');
+      this.parentNode.parentNode.parentNode.querySelector('button#community').classList.toggle('active');
       this.remove();
-      // this.parentNode.querySelector('button#community').classList.toggle('active');
     });
 
     this._ctx.font = '128px Everett';
@@ -131,6 +131,10 @@ export default class HabitatCommunityPreviewCreator extends HTMLElement {
         evt.stopPropagation();
         this.vERCCreator.classList.toggle('active');
     });
+    let tokenCreated = this.shadowRoot.querySelector('#celebration');
+    if (tokenCreated) {
+      console.log('created: ' + tokenCreated.innerHTML)
+    }
   }
 
   _loadFile (evt) {

@@ -109,7 +109,6 @@ export default class HabitatVERCCreator extends HTMLElement {
     console.log(`Token(${address}) successfully created, the total supply was sent to your account.`);
 
     this.shadowRoot.querySelector('.wrapper').parentNode.innerHTML = `${CELEBRATION}`;
-
   }
 }
 customElements.define('habitat-verc-creator', HabitatVERCCreator);
