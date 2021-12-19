@@ -20,11 +20,13 @@ TEMPLATE.innerHTML = `
 button, .button, button *, .button * {
   background-color: var(--color-bg-button);
 }
-.communityBox {
+#create-community-box {
   border-radius: 2em;
   background-color: var(--color-box);
   border: 1px solid var(--color-bg-invert);
   width:100%;
+  margin:5em 0 0 0;
+  padding:3em;
 }
 canvas {
   margin: .5em 0;
@@ -37,7 +39,7 @@ canvas {
 canvas.editor {
   cursor: all-scroll;
 }
-.communityBox input, textarea {
+#create-community-box input, textarea {
   margin: .5em 0;
   color: var(--color-text);
   border-radius: 2em;
@@ -47,8 +49,32 @@ canvas.editor {
   width:100%;
   font-weight: 300;
 }
+#input {
+  width:100%; 
+  flex:1 0 0;
+}
+#title {
+  width:100%;
+  height:1em;
+  justify-content:center;
+}
+#details {
+  width:100%;
+  resize:vertical;
+  min-height:8ch;
+}
+#token {
+  height:1em;
+}
 input::placeholder, textarea::placeholder {
   color: var(--color-grey);
+}
+#create-token {
+  cursor:pointer;
+  white-space:nowrap;
+  padding:.5em;
+  text-decoration:underline;
+  font-weight:500;
 }
 habitat-verc-creator {
   width:100%;
@@ -57,20 +83,23 @@ habitat-verc-creator {
 habitat-verc-creator.active {
   display:block;
 }
+button#create {
+  place-self:flex-end;
+  padding:.5em 2em;
+}
 </style>
-<div class='communityBox' style='padding:2em;margin:5em 0 0 0'>
+<div id='create-community-box'>
   <div class='left' style='margin-bottom: 2em;'>
     <p class='l'><span><emoji-seedling></emoji-seedling><span> Create a Community</span></span></p>
   </div>
 
-  <div class='flex row between' style='align-items:flex-start;flex-wrap:wrap;gap:2em;'>
-    <div id='input' class='flex col center evenly' style='width:auto; flex:1 0 0;'>
-      <input style='width:100%;height:1em;justify-content:center;' id='title' placeholder='Name of Community'>
-      <textarea style='width:100%;resize:vertical;min-height:8ch;' id='details' placeholder='Info About Community'></textarea>
-
-      <div class='flex row between' style='width:100%;flex-wrap:nowrap;'>
-        <input style='height:1em;' id='token' placeholder='Governance Token' list='tokenlistv2'>
-        <a id='create-token' class='right bold s' style='cursor:pointer;white-space:nowrap;padding:.5em;text-decoration:underline;'>Create Token</a>
+  <div class='flex row between' style='align-items:flex-start;flex-wrap:wrap;gap:3em;'>
+    <div id='input' class='flex col center evenly'>
+      <input id='title' placeholder='Name of Community'>
+      <textarea id='details' placeholder='Info About Community'></textarea>
+      <div class='flex row between' style='width:100%;flex-wrap:nowrap;gap:1em;'>
+        <input id='token' placeholder='Governance Token' list='tokenlistv2'>
+        <a id='create-token' class='right s'>Create Token</a>
       </div>
       <habitat-verc-creator></habitat-verc-creator>
     </div>
@@ -86,7 +115,7 @@ habitat-verc-creator.active {
   </div>
 
   <div class='flex col align-right'>
-    <button id='create' style='place-self:flex-end;'>Create</button>
+    <button id='create'>Create</button>
   </div>
 </div>
 <div class='flex col'>
@@ -113,7 +142,6 @@ export default class HabitatCommunityPreviewCreator extends HTMLElement {
 
     wrapListener(this.shadowRoot.querySelector('#create'), this.create.bind(this));
     wrapListener(this.shadowRoot.querySelector('#boxleg'), () => {
-      this.parentNode.parentNode.parentNode.querySelector('button#community').classList.toggle('active');
       this.remove();
     });
 
@@ -127,14 +155,13 @@ export default class HabitatCommunityPreviewCreator extends HTMLElement {
     this.createToken = this.shadowRoot.querySelector('#create-token');
     this.vERCCreator = this.shadowRoot.querySelector('habitat-verc-creator');
 
-    this.createToken.addEventListener('click', (evt) => {
-        evt.stopPropagation();
-        this.vERCCreator.classList.toggle('active');
-    });
-    let tokenCreated = this.shadowRoot.querySelector('#celebration');
-    if (tokenCreated) {
-      console.log('created: ' + tokenCreated.innerHTML)
+    const vERCToggle = () => {
+      this.vERCCreator.classList.toggle('active');
     }
+    this.createToken.addEventListener('click', vERCToggle);
+
+    const celebration = this.vERCCreator.innerHTML
+    console.log(celebration)
   }
 
   _loadFile (evt) {
@@ -144,8 +171,13 @@ export default class HabitatCommunityPreviewCreator extends HTMLElement {
     const img = document.createElement('img');
 
     img.onload = () => {
+      //fit image
+      const scale = Math.max(this._ctx.canvas.width / img.width, this._ctx.canvas.height / img.height);
+      const x = (img.width * scale) + (this._ctx.canvas.width * scale) / this._ctx.canvas.width;
+      const y = (img.height * scale) + (this._ctx.canvas.height * scale) / this._ctx.canvas.height;
+
       this._ctx.clearRect(0, 0, this._ctx.canvas.width, this._ctx.canvas.height);
-      this._ctx.drawImage(img, 0, 0);
+      this._ctx.drawImage(img, 0,0, img.width, img.height, 0, 0, x, y);
       this._ctx.canvas.classList.toggle('editor');
       console.log('image loaded')
     };

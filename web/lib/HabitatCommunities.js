@@ -1,19 +1,15 @@
 import { 
-  ethers,
   getSigner, 
   checkScroll, 
-  wrapListener, 
-  getEtherscanLink, 
-  walletIsConnected } from '/lib/utils.js';
+  wrapListener,  
+  walletIsConnected, 
+  getConfig } from '/lib/utils.js';
 import { 
   getProviders, 
   pullEvents, 
-  onChainUpdate, 
-  getReceipt, 
   getMetadataForTopic,
   queryTransfers,
-  decodeMetadata, 
-  getCommunityInformation } from '/lib/rollup.js';
+  onChainUpdate } from '/lib/rollup.js';
 import HabitatPanel from '/lib/HabitatPanel.js';
 import '/lib/HabitatCommunityPreviewCreator.js';
 import './HabitatFlipCard.js';
@@ -25,6 +21,69 @@ const SVG_SORT_ICON = `<svg width="20" height="20" viewBox="0 0 21 21" fill="non
 </svg>`
 
 const COMMUNITY_PREVIEW_TEMPLATE = `
+<style>
+#community-card {
+  min-height: 10em;
+  width:100%;
+  height:100%;
+}
+.title {
+  display:block;
+  width: 92%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#front-title {
+  height:25%;
+  padding: 1rem 2rem;
+}
+#banner-container {
+  width:100%;
+  aspect-ratio: 2/1;
+}
+#front-banner {
+  width:100%;
+  height:100%;
+  border-radius: 2em;
+  background:white;
+  overflow:hidden;
+}
+#front-banner img {
+  width:100%;
+  height:100%;
+  display: block;
+  object-fit:cover;
+}
+
+#description-card {
+  min-height: 11em;
+  height: var(--backHeight);
+  width: var(--backWidth);
+}
+#description-card * {
+  color: var(--color-text-invert);
+}
+#back-title {
+  height:20%;
+  padding: 1rem 2rem;
+}
+#description {
+  padding: 1rem 2rem;
+  height: 90%;
+  cursor:default;
+}
+#details {
+  height:85%;
+  min-width:11em;
+  overflow:auto;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+#details::-webkit-scrollbar {
+  display: none;
+}
+</style>
 <habitat-flip-card>
   <div slot='front'>
     <div id='community-card'>
@@ -56,76 +115,38 @@ class HabitatCommunities extends HabitatPanel {
   static TEMPLATE =
   `
   <style>
-  #allCommunities, #userCommunities {
-    gap: 2em;
-    margin-bottom: 5em;
+  #main {
+    width:90%;
+    margin-left:auto;
+    margin-right:auto;
+    position:relative;
   }
-  .flip-card {
+  #main *,
+  #main :before,
+  #main :after {
+    box-sizing: border-box;
+  }
+  #communities, #user-communities {
+    gap: 2em;
+    margin-bottom: 2em;
+    flex-flow:row wrap;
+    justify-content: flex-start;
+  }
+  #communities > *, #user-communities > * {
     cursor: pointer;
     min-width: 15em;
     max-width: 30em;
-    flex: 1 1 0;
-  }
-  #community-card {
-    min-height: 10em;
-    width:100%;
-    height:100%;
-  }
-  #front-title {
-    height:25%;
-    padding: 1rem 2rem;
-  }
-  #banner-container {
-    width:100%;
-    aspect-ratio: 2/1;
-  }
-  #front-banner {
-    width: 100%;
-    height: 100%;
-    border-radius: 2em;
-    background:white;
-    overflow:hidden;
-  }
-  #front-banner img {
-    width:100%;
-    height:100%;
-    display: block;
-    object-fit:cover;
-  }
-
-  #description-card {
-    min-height: 11em;
-    height: var(--backHeight);
-    width: var(--backWidth);
-  }
-  #description-card * {
-    color: var(--color-text-invert);
-  }
-  #back-title {
-    height:20%;
-    padding: 1rem 2rem;
-  }
-  #description {
-    padding: 1rem 2rem;
-    height: 90%;
-    cursor:default;
-  }
-  #details {
-    height:85%;
-    min-width:11em;
-    overflow:auto;
+    flex: 1 1 10em;
+    &:empty {
+      height: 0;
+      border: none;
+    };
   }
 
   #buttons * {
     margin-right: 0;
   }
-  #community {
-    visibility:hidden;
-  }
-  #community.visible {
-    visibility:visible;
-  }
-  #community.active {
+  #create-community.pressed {
     background: var(--color-bg-invert);
     color: var(--color-text-invert);
     transition: all .2s linear;
@@ -158,22 +179,21 @@ class HabitatCommunities extends HabitatPanel {
     cursor:pointer;
     color: var(--color-text);
   }
-  #userCommunitiesContainer {
+  #user-section {
     display: none;
   }
-  #userCommunitiesContainer.visible {
+  #user-section.visible {
     display: block;
   }
-
   
   </style>
-  <div style='width:90%;margin-left:auto;margin-right:auto;position:relative;'>
+  <div id='main'>
 
     <space></space>
 
     <div style='position:absolute;right:0;padding:1rem 0;'>
       <div id='buttons' class='flex row' style='place-content:flex-end;'>
-        <button id='community'>Create</button>
+        <button id='create-community'>Create</button>
         <button id='sort'>${SVG_SORT_ICON}</button>
         <div id='sort-dropdown' style='position:relative;'>
           <ul class='box' id='sort-options'>
@@ -185,81 +205,41 @@ class HabitatCommunities extends HabitatPanel {
       </div>
     </div>
 
-    <div id='createCommunityContainer'>
+    <div id='creating-community'>
     </div>
 
-    <div id='userCommunitiesContainer'>
+    <div id='user-section'>
       <p class='xl light' style='padding:2rem 0;'><span><emoji-herb></emoji-herb><span> Your Communities</span></span></p>
-      <div id='userCommunities' class='flex row center evenly'></div>
+      <div id='user-communities' class='flex row evenly'>
+      </div>
     </div>
     <div>
       <p class='xl light' style='padding:2rem 0;'><span><emoji-camping></emoji-camping><span> Communities on Habitat</span></span></p>
-      <div id='allCommunities' class='flex row center evenly'></div>
+      <div id='communities' class='flex row evenly'>
+      </div>
     </div>
-
   </div>
   `;
 
   constructor() {
     super();
 
-    this.sortBtn = this.shadowRoot.querySelector('button#sort');
-    this.dropdown = this.shadowRoot.querySelector('#sort-dropdown');
-    this.selector = this.shadowRoot.querySelector('#sort-options');
-
-    this._loaded = {};
+    //YourCommunities
+    this.tokens = []; //compare w each community token
+    this.userSection = this.shadowRoot.querySelector('#user-section');
+    this.userCommunities = [];
+    this.userContainer = this.shadowRoot.querySelector('#user-communities');
     this._userLoaded = {};
 
-    this.communities = []; // for sorting / watching
-    this.userCommunities = []; // for sorting / watching
-
-    this.tokens = []; //for comparison
-
-    this.container = this.shadowRoot.querySelector('#allCommunities');
-    this.userContainer = this.shadowRoot.querySelector('#userCommunities');
-
-    //wrapListener(this.shadowRoot.querySelector('button#name'), (evt) => new UsernameFlow(evt.target));
-
-    this.sortBtn.addEventListener('click', evt => {
-        evt.stopPropagation();
-        this.dropdown.classList.toggle('active');
-        if (this.dropdown.classList.contains('active')) {
-          this.selector.addEventListener('click', evt => {
-            if (evt.target.id.startsWith('sort-') && !evt.target.id.match('sort-options')) {
-
-              this.userContainer.innerHTML = '';
-              this._userLoaded = {};
-
-              this.container.innerHTML = '';
-              this._loaded = {};
-
-              if (evt.target.id === 'sort-az') {
-                this.communities.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1);
-                this.userCommunities.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1);
-              }
-              if (evt.target.id === 'sort-za') {
-                this.communities.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase()) ? 1 : -1);
-                this.userCommunities.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase()) ? 1 : -1);
-              }
-              if (evt.target.id === 'sort-recent') {
-                this.communities.sort((a, b) => (a.block < b.block) ? 1 : -1);
-                this.userCommunities.sort((a, b) => (a.block < b.block) ? 1 : -1);
-              }
-            }
-          }, false);
-          //click anywhere in "communities" to close
-          this.shadowRoot.addEventListener('click', evt => { //or evt.target is sortBtn
-            if (!evt.target.id.startsWith('sort-')) {
-              this.dropdown.classList.remove('active');
-            }
-          }, false);
-        }
-    });
-
+    // Communities on Habitat
+    this.communities = [];
+    this.container = this.shadowRoot.querySelector('#communities');
+    this.container.insertAdjacentHTML('beforeend', '<span></span><div></div><div></div><div></div>')
+    this._loaded = {};
     checkScroll(
       this.shadowRoot.querySelector('#content'),
-      () => {
-        for (const community of this.communities) {
+      async () => {
+        for await (const community of this.communities) {
           if (!this._loaded[community.transactionHash]) {
             this._loaded[community.transactionHash] = true;
             this.renderCommunity(this.container, community);
@@ -267,61 +247,100 @@ class HabitatCommunities extends HabitatPanel {
         }
       }
     );
-    
-    this._userLoad(
+
+    // handle create button
+    this.creatingCommunity = this.shadowRoot.querySelector('#creating-community')
+    let createCommunityCard;
+    wrapListener(
+      this.shadowRoot.querySelector('#create-community'),
       () => {
-        for (const community of this.userCommunities) {
-          if (!this._userLoaded[community.transactionHash]) {
-            this._userLoaded[community.transactionHash] = true;
-            this.renderCommunity(this.userContainer, community);
+        if (walletIsConnected()) {
+          createCommunityCard = this.shadowRoot.querySelector('habitat-community-preview-creator');
+          if (createCommunityCard) {
+            throw new Error('Only one card allowed at a time');
           }
+          else {
+            this.creatingCommunity.prepend(document.createElement('habitat-community-preview-creator'));
+          }
+        } else {
+          throw new Error('Please connect a wallet');
         }
       }
     );
+    // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver#MutationObserverInit
+    const observer = new MutationObserver(() => {
+      this.shadowRoot.querySelector('button#create-community').classList.toggle('pressed');
+    });
+    observer.observe(this.creatingCommunity, {
+      childList: true
+    });
 
+    // handle sort button
+    this.sorting = 'sort-recent'; //sorting global var
+    this.sort(this.sorting);
+    this.sortBtn = this.shadowRoot.querySelector('button#sort');
+    this.dropdown = this.shadowRoot.querySelector('#sort-dropdown');
+    this.selector = this.shadowRoot.querySelector('#sort-options');
+    this.sortBtn.addEventListener('click', evt => {
+      evt.stopPropagation();
+      this.dropdown.classList.toggle('active');
+      if (this.dropdown.classList.contains('active')) {
+        this.selector.addEventListener('click', evt => {
+          this.sort(evt.target.id);
+        }, false);
+        //click anywhere in communities tab to close
+        this.shadowRoot.addEventListener('click', evt => {
+          if (!evt.target.id.startsWith('sort-')) {
+            this.dropdown.classList.remove('active');
+          }
+        }, false);
+      }
+    });
+
+    //for all flipcards, flip to front on window resize
+    window.addEventListener('resize', () => {
+      for (const flipcard of this.shadowRoot.querySelectorAll('habitat-flip-card')) {
+        const wrapper = flipcard.shadowRoot.querySelector('.flip-wrapper')
+        wrapper.classList.remove('flip');
+      }
+    });
   }
 
   get title () {
     return 'Communites';
   }
 
-  _userLoad (callback) {
-    async function _check () {
-      await callback();
-      window.requestAnimationFrame(_check);
+  async sort(sorting) {
+    this.userContainer.innerHTML = ''
+    this.userContainer.insertAdjacentHTML('beforeend', '<span></span><div></div><div></div><div></div>')
+    this._userLoaded = {}
+
+    if (sorting.startsWith('sort-') && !sorting.match('sort-options')) {
+
+      this.container.innerHTML = ''
+      this.container.insertAdjacentHTML('beforeend', '<span></span><div></div><div></div><div></div>')
+      this._loaded = {}
+
+      if (sorting === 'sort-az') {
+        this.communities.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1);
+        this.userCommunities.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1);
+      }
+      if (sorting === 'sort-za') {
+        this.communities.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase()) ? 1 : -1);
+        this.userCommunities.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase()) ? 1 : -1);
+      }
+      if (sorting === 'sort-recent') {
+        this.communities.sort((a, b) => (a.block < b.block) ? 1 : -1);
+        this.userCommunities.sort((a, b) => (a.block < b.block) ? 1 : -1);
+      }
     }
-    _check();
+    this.sorting = sorting;
   }
 
-  //render elements
+  // load communities
   async render () {
+
     const { habitat } = await getProviders();
-
-    if (walletIsConnected()) {
-      this.shadowRoot.querySelector('button#community').classList.toggle('visible');
-      //toggle your communities on
-      const signer = await getSigner();
-      let address = await signer.getAddress();
-      this.tokens = (await queryTransfers(address)).tokens;
-      if (this.userCommunities) {
-        this.shadowRoot.querySelector('#userCommunitiesContainer').classList.toggle('visible');
-      }
-    }
-
-    wrapListener(
-      this.shadowRoot.querySelector('button#community'),
-      (evt) => {
-        let createCommunityCard = this.shadowRoot.querySelector('habitat-community-preview-creator');
-        if (createCommunityCard) {
-          throw new Error('Only one card allowed at a time');
-        }
-        else {
-          this.shadowRoot.querySelector('button#community').classList.toggle('active');
-          this.shadowRoot.querySelector('#createCommunityContainer').prepend(document.createElement('habitat-community-preview-creator'));
-        }
-      }
-    );
-    
     const filter = habitat.filters.CommunityCreated();
     filter.toBlock = await habitat.provider.getBlockNumber();
     for await (const evt of pullEvents(habitat, filter, filter.toBlock)) {
@@ -338,16 +357,68 @@ class HabitatCommunities extends HabitatPanel {
           details: metadata.details,
           banner: metadata.bannerCid
         }
-        if (this.tokens && this.tokens.includes(community.token) && !this.userCommunities[evt.transactionHash]) {
-          this.userCommunities.push(community);
-        }
         
         if (!this.communities[evt.transactionHash]) {
           this.communities.push(community);
         }
+    }
 
+    return this.chainUpdateCallback();
+  }
+// ----------------------------------
+  //updater
+  async chainUpdateCallback () {
+
+    await this.fetchLatest();
+
+    const userLoad = () => {
+      for (const community of this.userCommunities) {
+        if (!this._userLoaded[community.transactionHash]) {
+          this._userLoaded[community.transactionHash] = true;
+          this.renderCommunity(this.userContainer, community);
+        }
+      }
+    }
+    async function _check () {
+      userLoad();
+      window.requestAnimationFrame(_check);
+    }
+    _check();
+
+    let account;
+    if (!walletIsConnected()) {
+      this.tokens = [];
+    }
+    if (walletIsConnected()) {
+      account = await (await getSigner()).getAddress();
+      let tokens = (await queryTransfers(account)).tokens;
+        
+      if (tokens.length === 0 || tokens !== this.tokens) {
+
+        const { HBT } = getConfig();
+    
+        this.userCommunities = [];
+        this.userSection.classList.remove('visible');
+    
+        for (const community of this.communities) {
+          // following condition left out for demonstration purposes
+          // && !community.token.includes(HBT)
+          if (tokens.length > 0 && tokens.includes(community.token)) {
+            if (!this.userSection.classList.contains('visible')) {
+              this.userSection.classList.toggle('visible');
+            }
+            if (!this.userCommunities[community.transactionHash]) {
+              this.userCommunities.push(community);
+            }
+          }
+        }
+  
+        this.tokens = tokens;
+      }
     }
   }
+
+  // render community cards
   async renderCommunity (container, community, prepend = false) {
     const ele = document.createElement('div');
     ele.innerHTML = COMMUNITY_PREVIEW_TEMPLATE;
@@ -371,21 +442,13 @@ class HabitatCommunities extends HabitatPanel {
       ele.querySelector('img').src = `https://bafkreiawxlr6ljlqitbhpxnkipsf35vefldej2r4tgoozxonilyinwohyi.ipfs.infura-ipfs.io/`;
     }
 
+    const span = container.querySelector('span')
+
     if (prepend) {
       container.prepend(ele);
     } else {
-      container.append(ele);
+      container.insertBefore(ele, span);
     }
-  }
-
-  //updater
-  async chainUpdateCallback () {
-    await this.fetchLatest();
-  }
-
-  //propogate newly created community
-  async chainUpdateCallback () {
-    await this.fetchLatest();
   }
 
   async fetchLatest () {
@@ -394,9 +457,30 @@ class HabitatCommunities extends HabitatPanel {
     filter.toBlock = await habitat.provider.getBlockNumber();
 
     for await (const evt of pullEvents(habitat, filter, 1)) {
-      if (!this._loaded[evt.transactionHash]) {
-        this._loaded[evt.transactionHash] = true;
-        this.renderCommunity(this.container, evt, true);
+
+      const { communityId, governanceToken } = evt.args;
+      const metadata = await getMetadataForTopic(communityId);
+      // const memberCount = await habitat.callStatic.getTotalMemberCount(communityId);
+      const community = {
+        transactionHash: evt.transactionHash,
+        name: metadata.title,
+        link: `#habitat-community,${evt.transactionHash}`,
+        token: governanceToken,
+        // members: memberCount,
+        block: evt.block,
+        details: metadata.details,
+        banner: metadata.bannerCid
+      }
+
+      if (!this.communities[evt.transactionHash] && !this._loaded[community.transactionHash]) {
+        this.communities.push(community);
+        this._loaded[community.transactionHash] = true;
+        this.renderCommunity(this.container, community, true);
+        if (this.tokens.includes(community.token)) {
+          this.userCommunities.push(community);
+          this._userLoaded[community.transactionHash] = true;
+          this.renderCommunity(this.userContainer, community, true);
+        }
       }
     }
   }

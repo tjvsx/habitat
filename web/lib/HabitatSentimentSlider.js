@@ -2,106 +2,28 @@ const TEMPLATE = document.createElement('template');
 TEMPLATE.innerHTML = `
 <style>
 :host {
-  margin: 1rem;
-  width: 12ch;
-  position: relative;
-}
-
-* {
-  transform: translateY(-50%);
-}
-
-.min, .max, .q1, .q2, .q3 {
-  position: absolute;
-  z-index: 1;
-  margin: 0;
-  top: 50%;
-  bottom: 50%;
-}
-
-.min {
-  height: .75em;
-  width: .75em;
-  border-radius: 50%;
-  left: -4%;
-  background-color: #579E86;
-  ;
-}
-
-.max {
-  height: .75em;
-  width: .75em;
-  border-radius: 50%;
-  right: -4%;
-  background-color: #F87972;
-  ;
-}
-
-.q1 {
-  border-left: 1px solid;
-  height: .4em;
-  left: 25%;
-}
-
-.q2 {
-  border-left: 1px solid;
-  height: .4em;
-  left: 50%;
-}
-
-.q3 {
-  border-left: 1px solid;
-  height: .4em;
-  left: 75%;
-}
-
-.bar {
   display: block;
-  margin-left: auto;
-  margin-right: auto;
   width: 100%;
-  height: .1em;
-  z-index: 1;
-
-  background: transparent;
+  border: 1px solid var(--color-bg-invert);
+  border-radius: 6px;
   background: linear-gradient(90deg, #579D83 0 4%, #6FAA82 4% 16%, #89B981 16% 23%, #99C281 23% 30%, #ADCE80 30% 40%, #CCE080 40% 45%, #D5E37E 45% 53%, #D6D87D 53% 61%, #E1C87B 61% 80%, #E8AF78 67% 80%, #F28F74 80% 93%, #F87972 93% 100%);
-  transition: all .07s linear;
 }
 
 #inner {
-  appearance: none; 
-  display: block;
-  width: 100%; 
-  background: transparent;
-  position: absolute;
-  z-index: 2;
+  position: relative;
+  border-radius: 6px;
+  height: 1em;
+  width: 100%;
+  box-sizing: border-box;
+  transition: all .07s linear;
+  background: var(--color-bg);
+  background-clip: content-box;
   user-select: none;
-  margin-right: auto;
-  margin-left: auto;
-  margin-top: auto;
-  margin-bottom: auto;
+  -webkit-user-select: none;
   cursor: pointer;
 }
-
-#inner::-webkit-slider-thumb {
-  appearance: none;
-  height: 1.4rem;
-  width: 0.55rem;
-  background: #F2F2F2;
-  border: 1px solid var(--color-bg-invert);
-  border-radius: 2em;
-  z-index: 3;
-}
-
 </style>
-<input type='range' id='inner' value='0' />
-<div class='bar'>
-  <span class='min'></span>
-  <span class='q1'></span>
-  <span class='q2'></span>
-  <span class='q3'></span>
-  <span class='max'></span>
-</div>
+<div id='inner'></div>
 `;
 
 const ATTR_VALUE = 'value';
@@ -119,7 +41,7 @@ class HabitatSentimentSlider extends HTMLElement {
 
     this.inner = this.shadowRoot.querySelector('#inner');
     this.focused = false;
-    this.scheduled = false; //?
+    this.scheduled = false;
     this.value = 0;
     this._width = 0;
     this._x = 0;
@@ -211,6 +133,3 @@ class HabitatSentimentSlider extends HTMLElement {
   }
 }
 customElements.define('habitat-sentiment-slider', HabitatSentimentSlider);
-
-
-

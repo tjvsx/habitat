@@ -2368,7 +2368,7 @@ emoji-santa-claus {
   background-size: cover;
   background-image: url('./santa-claus.png');
 }
-emoji-mrs-claus {
+emoji-mrs.-claus {
   display: inline-block;
   height: 1em;
   width: 1em;
@@ -2376,7 +2376,7 @@ emoji-mrs-claus {
   vertical-align: bottom;
   background-repeat: no-repeat;
   background-size: cover;
-  background-image: url('./mrs-claus.png');
+  background-image: url('./mrs.-claus.png');
 }
 emoji-superhero {
   display: inline-block;

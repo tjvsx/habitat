@@ -90,19 +90,15 @@ class HabitatFlipCard extends HTMLElement {
       e.addEventListener('click', () => {
         const wrapper = this.shadowRoot.querySelector('.flip-wrapper');
         //set front w/h dimensions to back
-        this.parentNode.style.setProperty(`--backWidth`, `${this.shadowRoot.querySelector('.flip-card-front').clientWidth}px`, `important`);
-        this.parentNode.style.setProperty(`--backHeight`, `${this.shadowRoot.querySelector('.flip-card-front').clientHeight}px`, `important`);
+        this.parentElement.style.setProperty(`--backWidth`, `${this.shadowRoot.querySelector('.flip-card-front').clientWidth}px`, `important`);
+        this.parentElement.style.setProperty(`--backHeight`, `${this.shadowRoot.querySelector('.flip-card-front').clientHeight}px`, `important`);
         //and use --backheight / --backwidth css vars
 
         const flipped = wrapper.classList.toggle('flip');
         if (flipped) {
-          window.addEventListener('resize', () => {
-            wrapper.classList.remove('flip');
-          }); //flip back to front on window resize
-
           setTimeout(() => {
             wrapper.classList.remove('flip');
-          }, 30000); // return to front
+          }, 30000); // return to front side of card
         }
       }, false);
     }

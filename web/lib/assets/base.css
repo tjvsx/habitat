@@ -139,7 +139,7 @@ button, .button {
   min-width: 3em;
   max-width: max-content;
   margin: 1rem 1rem 0 0;
-  padding: .5em 1em;
+  padding: .5em 1rem;
   line-height: 1;
   text-align: center !important;
   color: var(--color-text);
@@ -359,6 +359,7 @@ img.minmax {
 
 .xl {
   font-size: 1.5em;
+  line-height: 1.5em;
 }
 
 .item {
